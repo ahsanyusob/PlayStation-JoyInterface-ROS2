@@ -18,7 +18,7 @@
 #include <memory>
 #include <sensor_msgs/msg/joy.hpp>
 #include <ackermann_msgs/msg/ackermann_drive.hpp>
-#include <rclcpp/rclcpp.hpp>
+#include <ackermann_msgs/msg/ackermann_drive_stamped.hpp>
 
 #include <p9n_interface/p9n_interface.hpp>
 
@@ -28,18 +28,21 @@ class TeleopAckermannJoyNode : public rclcpp::Node
 {
 public:
   using Ackermann = ackermann_msgs::msg::AckermannDrive;
+  using AckermannStamped = ackermann_msgs::msg::AckermannDriveStamped;
   using Joy = sensor_msgs::msg::Joy;
 
 private:
-  double max_speed_;      // m/s
-  double max_steer_deg_;  // Degrees
-  bool is_reverse_mode_ = false;
+  double max_speed_;
+  double max_steer_deg_;
+  bool use_stamped_;
+  std::string child_frame_;
 
   p9n_interface::HW_TYPE hw_type_;
   std::unique_ptr<p9n_interface::PlayStationInterface> p9n_if_;
 
   rclcpp::Subscription<Joy>::SharedPtr joy_sub_;
   rclcpp::Publisher<Ackermann>::SharedPtr ack_pub_;
+  rclcpp::Publisher<AckermannStamped>::SharedPtr ack_stamped_pub_;
 
   rclcpp::TimerBase::SharedPtr timer_watchdog_;
 

@@ -24,14 +24,17 @@ def generate_launch_description():
     """Generate launch description for Ackermann Teleop."""
     
     # 1. Declare Arguments
+    child_frame_arg = DeclareLaunchArgument(
+        'child_frame', default_value=TextSubstitution(text='base_link'))
+    
     hw_type_arg = DeclareLaunchArgument(
         'hw_type', default_value=TextSubstitution(text='DualShock3'))
     
     topic_name_arg = DeclareLaunchArgument(
         'topic_name', default_value=TextSubstitution(text='ackermann_drive'))
     
-    publish_hz_arg = DeclareLaunchArgument(
-        'publish_hz', default_value=TextSubstitution(text='50.0'))
+    use_stamped_arg = DeclareLaunchArgument(
+        'use_stamped', default_value=TextSubstitution(text='false'))
 
     # Initial limits (can be modified at runtime via D-Pad)
     initial_max_speed_arg = DeclareLaunchArgument(
@@ -63,8 +66,9 @@ def generate_launch_description():
                 name='teleop_ackermann_joy_node',
                 namespace='',
                 parameters=[{
+                        'child_frame_id': LaunchConfiguration('child_frame'),
                         'hw_type': LaunchConfiguration('hw_type'),
-                        'publish_hz': LaunchConfiguration('publish_hz'),
+                        'use_stamped': LaunchConfiguration('use_stamped'),
                         'initial_max_speed': LaunchConfiguration('initial_max_speed'),
                         'initial_max_steer_deg': LaunchConfiguration('initial_max_steer_deg')
                 }],
@@ -78,9 +82,10 @@ def generate_launch_description():
     # 3. Assemble Launch Description
     ld = LaunchDescription()
 
+    ld.add_action(child_frame_arg)
     ld.add_action(hw_type_arg)
     ld.add_action(topic_name_arg)
-    ld.add_action(publish_hz_arg)
+    ld.add_action(use_stamped_arg)
     ld.add_action(initial_max_speed_arg)
     ld.add_action(initial_max_steer_deg_arg)
 
